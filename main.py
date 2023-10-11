@@ -54,8 +54,9 @@ class GitDiffApp(tk.Tk):
     def export_diff(self):
         branch1 = self.branch1_var.get()
         branch2 = self.branch2_var.get()
-        cmd = f"git diff {branch1}..{branch2}"
-        process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd = f"git diff $(git merge-base {branch1} {branch2})..{branch2}"
+
+        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = process.communicate()
 
         with open("diff_output.txt", "w", encoding="utf-8") as file:
@@ -65,6 +66,7 @@ class GitDiffApp(tk.Tk):
                 file.write(output.decode())
 
         self.text.insert(tk.END, "Diff has been saved to diff_output.txt")
+
 
 
 if __name__ == "__main__":
